@@ -1,0 +1,7 @@
+numpy==1.16.5
+tensorflow==1.14.0
+tensorflow-serving-api-python3==1.8.0
+# grpcio==1.12.1
+grpcio==1.23.0
+pymysql==0.9.3
+configparser==5.0.0

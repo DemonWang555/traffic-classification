@@ -1,0 +1,9 @@
+version: '1'
+services:
+    traffic:
+        build: .
+        image: traffic
+        ports:
+            - "9999:9999/udp"
+        restart: always
+        net: host
