@@ -14,4 +14,4 @@ RUN python -m pip install --upgrade setuptools
 
 RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
-CMD ["python", "/app/traffic_classification.py"]
+CMD python /app/traffic_classification.py >> ./print_log.log
