@@ -160,10 +160,10 @@ def do(sock, addr):
                 [str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
             saddr_str = toIp(saddr)
             daddr_str = toIp(daddr)
-            if proto in (1, 6, 17):
-                proto_str = proto_map[proto]
-            else:
-                proto_str = 'other'
+            # if proto in (1, 6, 17):
+            #     proto_str = proto_map[proto]
+            # else:
+            #     proto_str = 'other'
             # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + s
 tr(bytes))
 
@@ -177,10 +177,13 @@ tr(bytes))
             # 检测并将结果回传
             type = doGrpc(data)
             # doSave(saddr_str, daddr_str, str(sport) , str(dport) , proto_str, type)
-            fname = proto_str + "_" + saddr_str + "_" + \
-                str(sport) + "_" + daddr_str + "_" + str(dport)
+            if type < 10:
+              class = 0
+            else：
+              class = 1
+            fname = {"srcIP": saddr_str, "dstIP": daddr_str, "proto": proto_str, "srcPort": str(sport), "dstPort": str(dport), "class": class}
             res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + type
-            sock.send(res_str.encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
+            sock.send(fname.encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
             print(res_str)
     finally:
         sock.close()
