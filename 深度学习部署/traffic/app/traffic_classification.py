@@ -14,8 +14,10 @@ import datetime
 
 dict_10class_malware = {0: 'Cridex', 1: 'Geodo', 2: 'Htbot', 3: 'Miuref', 4: 'Neris', 5: 'Nsis-ay', 6: 'Shifu',
                         7: 'Tinba', 8: 'Virut', 9: 'Zeus'}
-dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'Weibo', 9: 'WorldOfWarcraft',
-                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 18: 'Virut', 19: 'Zeus'}
+dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'We
+ibo', 9: 'WorldOfWarcraft',
+                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 
+18: 'Virut', 19: 'Zeus'}
 
 # 配置文件读取接口
 conf = ConfigParser()
@@ -162,12 +164,13 @@ def do(sock, addr):
                 proto_str = proto_map[proto]
             else:
                 proto_str = 'other'
-            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + str(bytes))
+            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + s
+tr(bytes))
 
             # 接收消息体
             body_buf = sock.recv(bytes)
-            if len(body_buf) != 784:
-                continue
+            # if len(body_buf) != 784:
+            #     continue
             format_str = "!" + str(bytes) + "s"
             data = struct.unpack(format_str, body_buf)[0]
 
