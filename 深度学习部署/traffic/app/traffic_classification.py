@@ -73,10 +73,10 @@ def doGrpc(data):
         results[key] = tf.contrib.util.make_ndarray(tensor_proto)
 
     score = results["scores"][0]
-    type = dict_10class_malware[score]
-    # type = dict_20class[score]
+    # type = dict_10class_malware[score]
+    type = dict_20class[score]
 
-    return type
+    return score
   
 
 def do(sock, addr):
@@ -88,11 +88,9 @@ def do(sock, addr):
                 print('客户端{}已断开！'.format(addr))
                 break
             proto_map = {1: 'ICMP', 6: 'TCP', 17: 'UDP'}
-            saddr, daddr, sport, dport, proto, code, bytes = struct.unpack(
-                '!IIHHBBH', head_buf[0:16])
+            saddr, daddr, sport, dport, proto, code, bytes = struct.unpack('!IIHHBBH', head_buf[0:16])
 
-            def toIp(x): return '.'.join(
-                [str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
+            def toIp(x): return '.'.join([str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
             saddr_str = toIp(saddr)
             daddr_str = toIp(daddr)
 
@@ -105,7 +103,6 @@ def do(sock, addr):
 
             # 检测并将结果回传
             type = doGrpc(data)
-            # doSave(saddr_str, daddr_str, str(sport) , str(dport) , proto_str, type)
             if type < 10:
               classes = 0
             else：
