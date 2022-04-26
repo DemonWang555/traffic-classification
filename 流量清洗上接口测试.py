@@ -6,7 +6,6 @@ from threading import Thread, Lock
 
 import numpy
 
-from inflection import dasherize
 
 
 def getMatrixfrom_pcap(data):
@@ -22,7 +21,7 @@ def getMatrixfrom_pcap(data):
     return new_fh
 
 c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_ip = '172.24.160.1'
+server_ip = '127.0.0.1'
 server_port = 9999
 
 # c.connect((server_ip, server_port))
@@ -33,7 +32,7 @@ sport = 45323
 dport = 1200
 proto = 6
 code = 1
-bytes = 512
+bytes = 784
 message = b'6' * 784
 
 data = struct.pack('!IIHHBBH', saddr, daddr, sport, dport, proto, code, bytes)
@@ -46,13 +45,19 @@ c.connect((server_ip, server_port))
 c.send(send_data)
 print('数据发送完成！')
 
+data = c.recv(1024)
+print(data)
+data = data.decode('utf-8')
+print(data)
+# saddr, daddr, sport, dport, proto = struct.unpack('!IIHHB', data[0:13])
+
 # print(send_data, len(send_data))
 # saddr, daddr, sport, dport, proto, code, bytes, data = struct.unpack('!IIHHBBH784s', send_data)
 
 # toIp = lambda x: '.'.join([str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
 # saddr_str = toIp(saddr)
 # daddr_str = toIp(daddr)
-# print(saddr_str, daddr_str, sport, dport, proto, code, bytes)
+# print(saddr_str, daddr_str, sport, dport, proto)
 # print(data)
-# data = getMatrixfrom_pcap(data)
-# print(len(data))
+
+c.close()
