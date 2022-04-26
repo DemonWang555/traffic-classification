@@ -77,40 +77,7 @@ def doGrpc(data):
     # type = dict_20class[score]
 
     return type
-
-
-def recvData_py(sock):
-    # 读取文件名信息
-    intsize = struct.calcsize('i')
-    fname_buf = sock.recv(intsize)
-    fname_size = 0
-    if fname_buf:
-        fname_size = struct.unpack('i', fname_buf)[0]
-    if fname_size <= 0:
-        return None, None
-    fname = sock.recv(fname_size).decode('utf-8')
-
-    # 读取fhead（内容为文件大小）
-    data_buf = sock.recv(intsize)
-    data_size = 0
-    if data_buf:
-        data_size = struct.unpack('i', data_buf)[0]
-    recvd_size = 0
-    data_total = b''
-
-    # 读取数据
-    while recvd_size < data_size:
-        if data_size - recvd_size > 1024:
-            data = sock.recv(1024)
-            recvd_size += len(data)
-        else:
-            data = sock.recv(data_size - recvd_size)
-            recvd_size = data_size
-
-        data_total += data
-
-    return fname, data_total
-
+  
 
 def do(sock, addr):
     try:
