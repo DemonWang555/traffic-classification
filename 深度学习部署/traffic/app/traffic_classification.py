@@ -28,34 +28,12 @@ channel = implementations.insecure_channel(
     conf['grpc']['host'], conf.getint('grpc', 'port'))
 stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
 
-# 建立数据库连接
-"""con = pymysql.connect(host=conf['mysql']['host'],
-                      port=conf.getint('mysql', 'port'),
-                      user=conf['mysql']['user'],
-                      password=conf['mysql']['password'],
-                      database=conf['mysql']['database'])"""
 lock = Lock()
 
 # 创建Socket，SOCK_DGRAM指定了这个Socket的类型是TCP
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.bind((conf['socket_server']['host'], conf.getint('socket_server', 'port')))
 s.bind(('', conf.getint('socket_server', 'port')))
 s.listen(128)
- 
-
-# 将检测结果存入数据库
-"""def doSave(saddr, daddr, sport, dport, proto, type):
-    cur = con.cursor()
-    try:
-        sql_str = "INSERT INTO flow_properties (src_IP, src_port, dst_IP, dst_port, protocol , description, timestamp)" \
-                  + " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')" \
-                  % (saddr, sport, daddr, dport, proto, type, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        lock.acquire()
-        cur.execute(sql_str)
-        con.commit()
-        lock.release()
-    finally:
-        cur.close()"""
 
 
 def getMatrixfrom_pcap(data):
@@ -133,16 +111,6 @@ def recvData_py(sock):
 
     return fname, data_total
 
-# 发送检测结果给流量清洗服务器
-
-
-def sendRes(fname, type):
-    # TODO 修改地址和端口号
-    s.sendto(fname.encode('utf-8'),
-             (conf['socket_client']['host'], conf.getint('socket_client', 'port')))
-    s.sendto(type.encode('utf-8'),
-             (conf['socket_client']['host'], conf.getint('socket_client', 'port')))
-
 
 def do(sock, addr):
     try:
@@ -160,12 +128,6 @@ def do(sock, addr):
                 [str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
             saddr_str = toIp(saddr)
             daddr_str = toIp(daddr)
-            # if proto in (1, 6, 17):
-            #     proto_str = proto_map[proto]
-            # else:
-            #     proto_str = 'other'
-            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + s
-tr(bytes))
 
             # 接收消息体
             body_buf = sock.recv(bytes)
@@ -178,13 +140,11 @@ tr(bytes))
             type = doGrpc(data)
             # doSave(saddr_str, daddr_str, str(sport) , str(dport) , proto_str, type)
             if type < 10:
-              class = 0
+              classes = 0
             else：
-              class = 1
-            fname = {"srcIP": saddr_str, "dstIP": daddr_str, "proto": proto_str, "srcPort": str(sport), "dstPort": str(dport), "class": class}
-            res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + type
+              classes = 1
+            fname = {"srcIP": saddr_str, "dstIP": daddr_str, "proto": proto_str, "srcPort": str(sport), "dstPort": str(dport), "class": str(classes)}
             sock.send(fname.encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
-            print(res_str)
     finally:
         sock.close()
 
