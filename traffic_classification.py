@@ -9,13 +9,15 @@ from tensorflow_serving.apis import prediction_service_pb2, predict_pb2
 
 import socket
 import struct
-# import pymysql
+import json
 import datetime
 
 dict_10class_malware = {0: 'Cridex', 1: 'Geodo', 2: 'Htbot', 3: 'Miuref', 4: 'Neris', 5: 'Nsis-ay', 6: 'Shifu',
                         7: 'Tinba', 8: 'Virut', 9: 'Zeus'}
-dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'Weibo', 9: 'WorldOfWarcraft',
-                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 18: 'Virut', 19: 'Zeus'}
+dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'We
+ibo', 9: 'WorldOfWarcraft',
+                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 
+18: 'Virut', 19: 'Zeus'}
 
 # 配置文件读取接口
 conf = ConfigParser()
@@ -93,10 +95,10 @@ def doGrpc(data):
         results[key] = tf.contrib.util.make_ndarray(tensor_proto)
 
     score = results["scores"][0]
-    type = dict_10class_malware[score]
-    # type = dict_20class[score]
+    # type = dict_10class_malware[score]
+    type = dict_20class[score]
 
-    return type
+    return score
 
 
 def recvData_py(sock):
@@ -162,7 +164,8 @@ def do(sock, addr):
                 proto_str = proto_map[proto]
             else:
                 proto_str = 'other'
-            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + str(bytes))
+            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + s
+tr(bytes))
 
             # 接收消息体
             body_buf = sock.recv(bytes)
@@ -174,11 +177,17 @@ def do(sock, addr):
             # 检测并将结果回传
             type = doGrpc(data)
             # doSave(saddr_str, daddr_str, str(sport) , str(dport) , proto_str, type)
-            fname = proto_str + "_" + saddr_str + "_" + \
-                str(sport) + "_" + daddr_str + "_" + str(dport)
-            res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + type
-            sock.send(res_str.encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
-            print(res_str)
+            # fname = proto_str + "_" + saddr_str + "_" +  str(sport) + "_" + daddr_str + "_" + str(dport)
+            header_data = {"update_info":"2022-4-26 15:00", "update_size":str(1)}
+            fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport)}
+            p4_addr = "10.112.233.101"
+            p4_port = 9031
+            client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            client.connect((p4_addr, p4_port))
+            # res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + str(type)
+            client.send(json.dumps(header_data).encode('utf-8'))
+            client.send(json.dumps(fname).encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
+            # print(res_str)
     finally:
         sock.close()
 
