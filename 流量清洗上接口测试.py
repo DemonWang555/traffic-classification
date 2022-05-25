@@ -47,6 +47,12 @@ print('数据发送完成！')
 
 data = c.recv(1024)
 print(data)
+data = c.recv(1024)
+print(data)
+data = c.recv(1024)
+print(data)
+data = c.recv(1024)
+print(data)
 # saddr, daddr, sport, dport, proto = struct.unpack('!IIHHB', data[0:13])
 
 # print(send_data, len(send_data))
