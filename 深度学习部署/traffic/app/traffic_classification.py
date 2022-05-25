@@ -111,12 +111,13 @@ def do(sock, addr):
             type = doGrpc(data)
             # fname = proto_str + "_" + saddr_str + "_" +  str(sport) + "_" + daddr_str + "_" + str(dport)
             header_data = {"update_info":"2022-4-26 15:00", "update_size":str(1)}
-            fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport)}
+            fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport), "class":str(type)}
             p4_addr = "10.112.233.101"
             p4_port = 9031
             client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             client.connect((p4_addr, p4_port))
-            # res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + str(type)
+            res_str = "检测类型：" + str(type)
+            sock.send(res_str.encode('utf-8'))
             client.send(json.dumps(header_data).encode('utf-8'))
             client.send(json.dumps(fname).encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
             # print(res_str)
