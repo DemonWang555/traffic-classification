@@ -108,7 +108,9 @@ def do(sock, addr):
             data = struct.unpack(format_str, body_buf)[0]
 
             # 检测并将结果回传
+            sock.send('1'.encode('utf-8'))
             type = doGrpc(data)
+            sock.send('2'.encode('utf-8'))
             # fname = proto_str + "_" + saddr_str + "_" +  str(sport) + "_" + daddr_str + "_" + str(dport)
             header_data = {"update_info":"2022-4-26 15:00", "update_size":str(1)}
             fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport), "class":str(type)}
