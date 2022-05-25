@@ -9,15 +9,13 @@ from tensorflow_serving.apis import prediction_service_pb2, predict_pb2
 
 import socket
 import struct
-# import pymysql
+import json
 import datetime
 
 dict_10class_malware = {0: 'Cridex', 1: 'Geodo', 2: 'Htbot', 3: 'Miuref', 4: 'Neris', 5: 'Nsis-ay', 6: 'Shifu',
                         7: 'Tinba', 8: 'Virut', 9: 'Zeus'}
-dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'We
-ibo', 9: 'WorldOfWarcraft',
-                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 
-18: 'Virut', 19: 'Zeus'}
+dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'Weibo', 9: 'WorldOfWarcraft',
+                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 18: 'Virut', 19: 'Zeus'}
 
 # 配置文件读取接口
 conf = ConfigParser()
@@ -32,6 +30,7 @@ lock = Lock()
 
 # 创建Socket，SOCK_DGRAM指定了这个Socket的类型是TCP
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# s.bind((conf['socket_server']['host'], conf.getint('socket_server', 'port')))
 s.bind(('', conf.getint('socket_server', 'port')))
 s.listen(128)
 
@@ -45,8 +44,7 @@ def getMatrixfrom_pcap(data):
     new_fh = numpy.uint8(fh)
     if fh.size > 784:
         new_fh = fh[0:784]
-
-    return new_fh
+        return new_fh
 
 
 def doGrpc(data):
@@ -77,7 +75,8 @@ def doGrpc(data):
     type = dict_20class[score]
 
     return score
-  
+
+# 发送检测结果给流量清洗服务器
 
 def do(sock, addr):
     try:
@@ -88,27 +87,39 @@ def do(sock, addr):
                 print('客户端{}已断开！'.format(addr))
                 break
             proto_map = {1: 'ICMP', 6: 'TCP', 17: 'UDP'}
-            saddr, daddr, sport, dport, proto, code, bytes = struct.unpack('!IIHHBBH', head_buf[0:16])
+            saddr, daddr, sport, dport, proto, code, bytes = struct.unpack(
+                '!IIHHBBH', head_buf[0:16])
 
             def toIp(x): return '.'.join([str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
             saddr_str = toIp(saddr)
             daddr_str = toIp(daddr)
+            if proto in (1, 6, 17):
+                proto_str = proto_map[proto]
+            else:
+                proto_str = 'other'
+            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + str(bytes))
 
             # 接收消息体
             body_buf = sock.recv(bytes)
-            # if len(body_buf) != 784:
-            #     continue
+            if len(body_buf) != 784:
+                continue
             format_str = "!" + str(bytes) + "s"
             data = struct.unpack(format_str, body_buf)[0]
 
             # 检测并将结果回传
             type = doGrpc(data)
-            if type < 10:
-              classes = 0
-            else：
-              classes = 1
-            fname = {"srcIP": saddr_str, "dstIP": daddr_str, "proto": proto_str, "srcPort": str(sport), "dstPort": str(dport), "class": str(classes)}
-            sock.send(fname.encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
+            # fname = proto_str + "_" + saddr_str + "_" +  str(sport) + "_" + daddr_str + "_" + str(dport)
+            header_data = {"update_info":"2022-4-26 15:00", "update_size":str(1)}
+            fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport)}
+            p4_addr = "10.112.233.101"
+            p4_port = 9031
+            client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            client.connect((p4_addr, p4_port))
+            res_str = "检测类型：" + str(type)
+            sock.send(res_str.encode('utf-8'))
+            client.send(json.dumps(header_data).encode('utf-8'))
+            client.send(json.dumps(fname).encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
+            # print(res_str)
     finally:
         sock.close()
 
