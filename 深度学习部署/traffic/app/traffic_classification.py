@@ -44,7 +44,8 @@ def getMatrixfrom_pcap(data):
     new_fh = numpy.uint8(fh)
     if fh.size > 784:
         new_fh = fh[0:784]
-        return new_fh
+
+    return new_fh
 
 
 def doGrpc(data):
@@ -90,14 +91,14 @@ def do(sock, addr):
             saddr, daddr, sport, dport, proto, code, bytes = struct.unpack(
                 '!IIHHBBH', head_buf[0:16])
 
-            def toIp(x): return '.'.join([str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
+            def toIp(x): return '.'.join(
+                [str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
             saddr_str = toIp(saddr)
             daddr_str = toIp(daddr)
             if proto in (1, 6, 17):
                 proto_str = proto_map[proto]
             else:
                 proto_str = 'other'
-            # print(proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport) + "    length: " + str(bytes))
 
             # 接收消息体
             body_buf = sock.recv(bytes)
@@ -115,8 +116,7 @@ def do(sock, addr):
             p4_port = 9031
             client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             client.connect((p4_addr, p4_port))
-            res_str = "检测类型：" + str(type)
-            sock.send(res_str.encode('utf-8'))
+            # res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + str(type)
             client.send(json.dumps(header_data).encode('utf-8'))
             client.send(json.dumps(fname).encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
             # print(res_str)
