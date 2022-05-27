@@ -160,7 +160,7 @@ def do(sock, addr):
 
             #检测并将结果发送给数据库
             type = doGrpc(data)
-            doSave(saddr_str, daddr_str, str(sport) , str(dport) , proto_str, type)
+            # doSave(saddr_str, daddr_str, str(sport) , str(dport) , proto_str, type)
             fname = proto_str + "_" + saddr_str + "_" + str(sport) + "_" + daddr_str + "_" + str(dport)
             res_str = "数据包真实类型，及其五元组：" + fname + "，检测类型：" + type
             sock.send(res_str.encode('utf-8'))
