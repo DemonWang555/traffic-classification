@@ -88,8 +88,7 @@ def do(sock, addr):
                 print('客户端{}已断开！'.format(addr))
                 break
             proto_map = {1: 'ICMP', 6: 'TCP', 17: 'UDP'}
-            saddr, daddr, sport, dport, proto, code, bytes = struct.unpack(
-                '!IIHHBBH', head_buf[0:16])
+            saddr, daddr, sport, dport, proto, code, bytes = struct.unpack('!IIHHBBH', head_buf[0:16])
 
             def toIp(x): return '.'.join(
                 [str(x // (256 ** i) % 256) for i in range(3, -1, -1)])  # 通过整数获取ip
