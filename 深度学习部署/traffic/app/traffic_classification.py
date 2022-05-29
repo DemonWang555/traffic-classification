@@ -107,18 +107,22 @@ def do(sock, addr):
             data = struct.unpack(format_str, body_buf)[0]
 
             # 检测并将结果回传
-            sock.send('1'.encode('utf-8'))
+            # sock.send('1'.encode('utf-8'))
             type = doGrpc(data)
-            sock.send('2'.encode('utf-8'))
+            # sock.send('2'.encode('utf-8'))
+            if type < 10:
+                type = 1
+            else:
+                type = 0
             # fname = proto_str + "_" + saddr_str + "_" +  str(sport) + "_" + daddr_str + "_" + str(dport)
             header_data = {"update_info":"2022-4-26 15:00", "update_size":str(1)}
             fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport), "class":str(type)}
-            p4_addr = "10.112.233.101"
+            p4_addr = "10.112.251.168"
             p4_port = 9031
             client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             client.connect((p4_addr, p4_port))
-            res_str = "检测类型：" + str(type)
-            sock.send(res_str.encode('utf-8'))
+            # res_str = "检测类型：" + str(type)
+            # sock.send(res_str.encode('utf-8'))
             client.send(json.dumps(header_data).encode('utf-8'))
             client.send(json.dumps(fname).encode('utf-8'))  # 需要根据控制平面的具体情况重新建立socket连接
             # print(res_str)
