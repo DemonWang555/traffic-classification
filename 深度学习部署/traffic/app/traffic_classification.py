@@ -116,7 +116,7 @@ def do(sock, addr):
                 type = 0
             # fname = proto_str + "_" + saddr_str + "_" +  str(sport) + "_" + daddr_str + "_" + str(dport)
             header_data = {"update_info":"2022-4-26 15:00", "update_size":str(1)}
-            fname = {"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "scrPort":str(sport), "dstPort":str(dport), "class":str(type)}
+            fname = [{"srcIP":saddr_str, "dstIP":daddr_str, "proto":str(proto), "srcPort":str(sport), "dstPort":str(dport), "class":str(type)}]
             p4_addr = "10.112.251.168"
             p4_port = 9031
             client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
