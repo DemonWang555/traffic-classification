@@ -26,8 +26,8 @@ server_port = 9999
 
 # c.connect((server_ip, server_port))
 
-saddr = 0
-daddr = 1
+saddr = 175727897
+daddr = 175727897
 sport = 45323
 dport = 1200
 proto = 6
@@ -46,13 +46,9 @@ c.send(send_data)
 print('数据发送完成！')
 
 data = c.recv(1024)
-print(data)
-data = c.recv(1024)
-print(data)
-data = c.recv(1024)
-print(data)
-data = c.recv(1024)
-print(data)
+print(data.decode('utf-8'))
+# data = c.recv(1024)
+print(json.loads(data))
 # saddr, daddr, sport, dport, proto = struct.unpack('!IIHHB', data[0:13])
 
 # print(send_data, len(send_data))
