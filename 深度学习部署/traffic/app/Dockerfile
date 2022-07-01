@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.6
 
 MAINTAINER hanzhuang hanzhuang42@foxmail.com
 
@@ -16,6 +16,7 @@ RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
 
 RUN chmod 777 /app/traffic_classification.py
 
-RUN export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+#RUN export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
-CMD $PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION /app/traffic_classification.py
+#CMD $PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION /app/traffic_classification.py
+CMD python /app/traffic_classification.py
