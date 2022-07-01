@@ -12,10 +12,8 @@ import struct
 import json
 import datetime
 
-dict_10class_malware = {0: 'Cridex', 1: 'Geodo', 2: 'Htbot', 3: 'Miuref', 4: 'Neris', 5: 'Nsis-ay', 6: 'Shifu',
-                        7: 'Tinba', 8: 'Virut', 9: 'Zeus'}
-dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'Weibo', 9: 'WorldOfWarcraft',
-                10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 18: 'Virut', 19: 'Zeus'}
+dict_10class_malware = {0: 'Cridex', 1: 'Geodo', 2: 'Htbot', 3: 'Miuref', 4: 'Neris', 5: 'Nsis-ay', 6: 'Shifu', 7: 'Tinba', 8: 'Virut', 9: 'Zeus'}
+dict_20class = {0: 'BitTorrent', 1: 'Facetime', 2: 'FTP', 3: 'Gmail', 4: 'MySQL', 5: 'Outlook', 6: 'Skype', 7: 'SMB', 8: 'Weibo', 9: 'WorldOfWarcraft', 10: 'Cridex', 11: 'Geodo', 12: 'Htbot', 13: 'Miuref', 14: 'Neris', 15: 'Nsis-ay', 16: 'Shifu', 17: 'Tinba', 18: 'Virut', 19: 'Zeus'}
 
 # 配置文件读取接口
 conf = ConfigParser()
